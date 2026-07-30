@@ -1,90 +1,37 @@
-# Case Zero
+# AI Detective
 
-Interactive detective mysteries powered by Claude AI.
+Interactive offline detective mystery game.
 
-## Architecture
+Explore crime scenes, interrogate suspects, collect evidence, and accuse the killer — before you run out of chances.
 
-```
-Frontend (React + Vite)  →  FastAPI Backend  →  Postgres
-                                    ↓
-                             Game Engine (source of truth)
-                                    ↓
-                             Claude (narrator only)
-```
+## Play
 
-**Key principle**: Claude never invents facts. The backend owns murderer, suspects, rooms, clues, and timeline. Claude only narrates player-discoverable information.
+**Web:** https://amal-kishore.github.io/ai-detective/
 
 ## Stack
 
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, Zustand, Framer Motion
-- **Backend**: FastAPI, SQLAlchemy 2 (async), PostgreSQL, Alembic
-- **AI**: Anthropic Claude (claude-sonnet-4-6)
-- **Auth**: JWT (python-jose + passlib/bcrypt)
+- React 19 + TypeScript + Vite
+- Tailwind CSS v4
+- Zustand
+- Framer Motion
+- Capacitor (Android)
 
-## Setup
+## How it works
 
-### 1. Postgres
+The game engine runs entirely on-device — no internet required, no server.
 
-```bash
-createdb casezero
-```
-
-### 2. Backend
-
-```bash
-cd backend
-cp .env.example .env
-# fill in DATABASE_URL, SECRET_KEY, ANTHROPIC_API_KEY
-pip install -r requirements.txt
-pip install "pydantic[email]"
-
-# Create tables + seed first case
-bash seed.sh
-
-# Start server
-bash start.sh
-```
-
-### 3. Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://localhost:5173
-
-## API
-
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/auth/register` | Create account |
-| POST | `/api/auth/login` | Login → JWT |
-| GET | `/api/cases` | List all cases |
-| POST | `/api/games` | Start a new game |
-| POST | `/api/games/{id}/action` | Send player action → narrator response |
-| GET | `/api/games/{id}/messages` | Full message history |
-
-## Game Engine
-
-`backend/app/game/engine.py` builds a system prompt from live game state — what rooms the player has visited, which clues they've found, the suspect list, and the timeline. Claude narrates within those constraints.
-
-Special tags Claude embeds in responses:
-- `<<CLUE:id>>` — player has discovered clue with this ID
-- `<<ACCUSATION:name>>` — player is accusing a suspect
-
-The engine strips tags before sending text to the frontend, updates game state, and calculates the score.
+- Cases are bundled as TypeScript data files
+- The engine parses player input, matches actions to rooms/suspects/objects, and returns narrative responses
+- Progress is saved automatically to local storage
 
 ## Adding Cases
 
-Edit `backend/app/db/seed.py` and add another dict to the seed list. Each case needs:
-- `victim`, `suspects`, `rooms`, `clues`, `timeline`, `opening_scene`
-- `murderer_id`: index into the `suspects` array
+Add a new file to `frontend/src/game/cases/` following the structure in `midnightMurder.ts`, then register it in `frontend/src/game/cases/index.ts`.
 
-## Week 2 Plan
+## Android Build
 
-- Room navigation UI (sidebar with room list)
-- Inventory display
-- NPC portraits
-- Daily case (same mystery for all players, leaderboard)
+```bash
+cd frontend
+npm run android:sync   # build + sync into Android project
+npm run android:open   # open in Android Studio
+```
