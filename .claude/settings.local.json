@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip3 show *)",
+      "Bash(pip3 install *)",
+      "Bash(npm create *)",
+      "Bash(python3 -c \"from app.main import app; print\\('Backend imports OK'\\)\")",
+      "Bash(DATABASE_URL=postgresql+asyncpg://x:x@localhost/x SECRET_KEY=testsecret ANTHROPIC_API_KEY=sk-ant-test python3 -c \"from app.main import app; print\\('Backend imports OK'\\)\")",
+      "Bash(chmod +x *)",
+      "Bash(npm run *)"
+    ]
+  }
+}
