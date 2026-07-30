@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import type { CaseData, GameState, Suspect } from '../../game/types'
@@ -16,6 +17,9 @@ export function SuspectSheet({ suspect, game, caseData, onTalk, onTopic, onClose
   const topicsDiscussed = game.suspectTopicsDiscussed[suspect.id] ?? []
   const suspicion = getSuspicionScore(suspect.id, game.foundClueIds, caseData)
   const hasSpoken = suspect.id in game.suspectTopicsDiscussed
+  const [localResponse, setLocalResponse] = useState<string | null>(null)
+
+  const displayText = localResponse ?? (hasSpoken ? suspect.defaultResponse : null)
 
   const availableTopics = suspect.topics.map((t, i) => ({
     ...t, index: i,
@@ -25,6 +29,17 @@ export function SuspectSheet({ suspect, game, caseData, onTalk, onTopic, onClose
 
   const suspicionColor = suspicion > 60 ? 'var(--danger)' : suspicion > 30 ? '#f59e0b' : 'var(--success)'
 
+  const handleApproach = () => {
+    setLocalResponse(suspect.defaultResponse)
+    onTalk(suspect.id)
+  }
+
+  const handleTopic = (t: typeof availableTopics[number]) => {
+    if (t.locked) return
+    setLocalResponse(suspect.topics[t.index].response)
+    onTopic(suspect.id, t.index)
+  }
+
   return (
     <motion.div
       initial={{ y: '100%' }}
@@ -32,7 +47,7 @@ export function SuspectSheet({ suspect, game, caseData, onTalk, onTopic, onClose
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 28, stiffness: 300 }}
       className="fixed inset-x-0 bottom-0 z-40 rounded-t-2xl flex flex-col"
-      style={{ background: 'var(--surface)', border: '1px solid var(--border)', maxHeight: '80vh' }}
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)', maxHeight: '82vh' }}
     >
       {/* Drag handle */}
       <div className="flex justify-center pt-3 pb-1 shrink-0">
@@ -60,10 +75,11 @@ export function SuspectSheet({ suspect, game, caseData, onTalk, onTopic, onClose
       </div>
 
       <div className="overflow-y-auto flex-1 px-4 py-4 space-y-4">
-        {/* Approach button */}
+
+        {/* Approach button — first time only */}
         {!hasSpoken && (
           <button
-            onClick={() => onTalk(suspect.id)}
+            onClick={handleApproach}
             className="w-full py-3 rounded-xl text-sm font-semibold uppercase tracking-wider"
             style={{ background: 'var(--accent-dim)', color: '#fff' }}
           >
@@ -71,18 +87,28 @@ export function SuspectSheet({ suspect, game, caseData, onTalk, onTopic, onClose
           </button>
         )}
 
-        {/* Topics */}
-        {availableTopics.length > 0 && (
-          <div>
-            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-dim)' }}>
-              {hasSpoken ? 'Ask about' : 'Available topics after approaching'}
+        {/* Inline response text */}
+        {displayText && (
+          <div
+            className="rounded-xl p-4"
+            style={{ background: 'rgba(192,132,252,0.06)', border: '1px solid rgba(192,132,252,0.15)' }}
+          >
+            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--text)' }}>
+              {displayText}
             </p>
+          </div>
+        )}
+
+        {/* Topics */}
+        {availableTopics.length > 0 && hasSpoken && (
+          <div>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-dim)' }}>Ask about</p>
             <div className="space-y-2">
               {availableTopics.map(t => (
                 <button
                   key={t.index}
                   disabled={t.locked}
-                  onClick={() => !t.locked && onTopic(suspect.id, t.index)}
+                  onClick={() => handleTopic(t)}
                   className="w-full text-left px-4 py-3 rounded-xl text-sm transition-opacity"
                   style={{
                     background: t.done ? 'rgba(52,211,153,0.06)' : 'var(--bg)',
@@ -100,7 +126,24 @@ export function SuspectSheet({ suspect, game, caseData, onTalk, onTopic, onClose
           </div>
         )}
 
-        {topicsDiscussed.length > 0 && (
+        {/* Not yet approached — show greyed topic list as preview */}
+        {availableTopics.length > 0 && !hasSpoken && (
+          <div>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-dim)' }}>
+              Topics available after approaching
+            </p>
+            <div className="space-y-2 opacity-40">
+              {availableTopics.map(t => (
+                <div key={t.index} className="px-4 py-3 rounded-xl text-sm"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text-dim)' }}>
+                  <span className="mr-2">—</span>{t.label}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {hasSpoken && topicsDiscussed.length > 0 && (
           <p className="text-xs text-center" style={{ color: 'var(--text-dim)' }}>
             {topicsDiscussed.length}/{suspect.topics.length} topics discussed
           </p>

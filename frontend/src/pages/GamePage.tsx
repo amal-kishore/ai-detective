@@ -6,6 +6,7 @@ import { ArrowLeft, BookOpen, Target, ChevronDown, ChevronUp, Keyboard } from 'l
 import { EvidenceBoard } from '../components/game/EvidenceBoard'
 import { AccuseScreen } from '../components/game/AccuseScreen'
 import { SuspectSheet } from '../components/game/SuspectSheet'
+import { RevealScreen } from '../components/game/RevealScreen'
 import type { Suspect, Clue } from '../game/types'
 import { Spinner } from '../components/ui/Spinner'
 
@@ -47,7 +48,7 @@ export function GamePage() {
       }
       if (result.newInsights.length > 0) {
         setFlashInsights(result.newInsights)
-        setTimeout(() => setFlashInsights([]), 4000)
+        setTimeout(() => setFlashInsights([]), 8000)
       }
       setProcessing(false)
     }, 60)
@@ -255,25 +256,6 @@ export function GamePage() {
           </div>
         </div>
 
-        {/* ── Game over ── */}
-        {isOver && (
-          <div className="mx-4 mt-6 rounded-xl p-5 text-center"
-            style={{ background: 'var(--surface)', border: `1px solid ${game.status === 'won' ? 'rgba(52,211,153,0.4)' : 'rgba(248,113,113,0.4)'}` }}>
-            <p className="text-lg font-bold mb-1" style={{ color: game.status === 'won' ? 'var(--success)' : 'var(--danger)' }}>
-              {game.status === 'won' ? '— Case Closed —' : '— Investigation Failed —'}
-            </p>
-            {game.score != null && (
-              <p className="text-sm mb-4" style={{ color: 'var(--text-dim)' }}>
-                Score: <span style={{ color: 'var(--accent)' }}>{game.score}</span> · {game.foundClueIds.length}/{totalClues} clues · {game.actionCount} actions
-              </p>
-            )}
-            <button onClick={() => { reset(); navigate('/') }}
-              className="px-8 py-3 rounded-xl text-sm uppercase tracking-widest font-bold"
-              style={{ background: 'var(--accent-dim)', color: '#fff' }}>
-              Back to Cases
-            </button>
-          </div>
-        )}
       </div>
 
       {/* ── Fixed bottom bar ── */}
@@ -316,6 +298,9 @@ export function GamePage() {
       )}
 
       {/* ── Overlays ── */}
+      <AnimatePresence>
+        {isOver && <RevealScreen game={game} caseData={activeCase} onBack={() => { reset(); navigate('/') }} />}
+      </AnimatePresence>
       <AnimatePresence>
         {showEvidence && <EvidenceBoard game={game} caseData={activeCase} onClose={() => setShowEvidence(false)} />}
       </AnimatePresence>

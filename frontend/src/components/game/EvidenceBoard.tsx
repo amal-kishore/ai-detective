@@ -88,6 +88,31 @@ export function EvidenceBoard({ game, caseData, onClose }: Props) {
             {missing} piece{missing !== 1 ? 's' : ''} of evidence still undiscovered.
           </p>
         )}
+
+        {/* Timeline */}
+        {caseData.timeline.length > 0 && (
+          <div>
+            <p className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--text-dim)' }}>
+              — Known Timeline —
+            </p>
+            <div className="space-y-0">
+              {caseData.timeline.map((event, i) => (
+                <div key={i} className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: 'var(--accent-dim)' }} />
+                    {i < caseData.timeline.length - 1 && (
+                      <div className="w-px flex-1 mt-1" style={{ background: 'var(--border)' }} />
+                    )}
+                  </div>
+                  <div className="pb-4">
+                    <p className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{event.time}</p>
+                    <p className="text-sm leading-snug" style={{ color: 'var(--text)' }}>{event.event}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   )

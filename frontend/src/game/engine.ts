@@ -122,10 +122,7 @@ function handleAccuse(suspectId: number, state: GameState, caseData: CaseData) {
   if (correct) {
     const score = calcScore(state, caseData)
     const next = { ...state, status: 'won' as const, score }
-    const found = state.foundClueIds.length
-    const total = caseData.clues.length
-    const text = `The room goes quiet.\n\nMargaret Hale does not flinch. For three seconds she simply looks at you.\n\nThen, very slowly, she sits down.\n\n"You are correct."\n\nShe poisoned the brandy before she served it. She had the combination to the safe. She burned the Vienna photographs in the library fireplace while Lord Ashworth was dying in his chair.\n\nHe had discovered she had been selling forged provenances for twelve years.\n\n━━━━━━━━━━━━━━━\n\nCase Closed.\n\nScore: ${score}\nEvidence: ${found}/${total}\nActions: ${state.actionCount}`
-    return finalize(text, next, [], caseData, 'won', score)
+    return finalize(caseData.solution.reveal, next, [], caseData, 'won', score)
   }
   const wrong = state.wrongAccusations + 1
   const next = { ...state, wrongAccusations: wrong }

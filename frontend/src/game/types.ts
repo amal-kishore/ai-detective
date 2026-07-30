@@ -24,6 +24,13 @@ export interface CaseData {
   clues: Clue[]
   timeline: TimelineEvent[]
   insights: CaseInsight[]
+  solution: CaseSolution
+}
+
+export interface CaseSolution {
+  reveal: string   // short dramatic text shown in narrative on correct accusation
+  method: string   // how the murder was committed
+  motive: string   // why
 }
 
 export interface Victim {

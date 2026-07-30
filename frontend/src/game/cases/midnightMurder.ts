@@ -208,6 +208,12 @@ export const midnightMurder: CaseData = {
     { id: 11, name: "Cook's testimony", description: "Mrs. Briggs saw Margaret in the kitchen at 11:45pm — asking which brandy Lord Ashworth preferred, despite knowing for 3 years.", roomId: 2, linkedSuspectIds: [2] },
   ],
 
+  solution: {
+    reveal: `The room goes very quiet.\n\nMargaret Hale does not flinch. She holds your gaze for three full seconds.\n\nThen she sits down.\n\n"You are correct."\n\nShe says it without drama, without collapse. As if she has been waiting for this for some time.`,
+    method: `Margaret laced the cognac decanter with potassium cyanide before serving the brandy at 11pm. She used the cellar — accessed from the kitchen — to prepare the dose. After Lord Ashworth drank and collapsed, she returned to the library, burned the Vienna photographs in the cold fireplace, emptied the wall safe of the forged certificates, and placed the vial behind the decanter.\n\nThe locked door was never a mystery. She left before he was dead and locked the door from the outside with her master key — a key she had carried for three years.`,
+    motive: `In Vienna, 1938, Margaret Hale and Edmund Ashworth were both involved in the wartime art trade. She had been forging provenance certificates for stolen paintings — selling looted works as legitimate acquisitions — for over a decade.\n\nLord Ashworth discovered the scheme when Clara Webb flagged the suspect paintings. He sent Margaret the midnight note. She understood what it meant: arrest, exposure, ruin.\n\nShe chose a third option.`,
+  },
+
   timeline: [
     { time: '10:00pm', event: 'Dinner ends. Lord Ashworth retires to the library.' },
     { time: '11:00pm', event: 'Margaret serves brandy to Lord Ashworth.' },
